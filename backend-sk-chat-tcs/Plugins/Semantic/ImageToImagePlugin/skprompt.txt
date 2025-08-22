@@ -1,0 +1,5 @@
+﻿[What to do]
+
+You need to edit image by applying different color on the surface user prompted
+
+{{$input}}
