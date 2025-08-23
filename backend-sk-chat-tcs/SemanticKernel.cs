@@ -22,6 +22,7 @@
 
 
             builder.Plugins.AddFromType<Estimate>();
+            builder.Plugins.AddFromType<ImageSurfaceColor>();
 
             //var pathToImageToImagePlugin = Path.Combine(Directory.GetCurrentDirectory(), "Plugins", "Semantic","ImageToImagePlugin");
             //builder.Plugins.AddFromPromptDirectory(pathToImageToImagePlugin,"ImageToImagePlugin");

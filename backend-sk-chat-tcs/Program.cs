@@ -21,6 +21,7 @@ builder.Services.AddSingleton<ChatManager>();
 
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

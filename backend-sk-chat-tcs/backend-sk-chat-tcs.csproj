@@ -17,6 +17,17 @@
     <Content Include="Plugins/Semantic/**/*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+
+    <Content Include="Plugins/Native/**/*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HelperScripts\" />
+    <Folder Include="Temp\" />
+  </ItemGroup>
+  
+  
 
 </Project>
