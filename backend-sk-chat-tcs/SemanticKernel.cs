@@ -3,6 +3,7 @@
     using backend_sk_chat_tcs.Plugins.Native;
     using Microsoft.SemanticKernel;
     using Microsoft.SemanticKernel.ChatCompletion;
+    using Supabase;
     using System.Reflection;
 
     public class SemanticKernel
@@ -17,12 +18,23 @@
             this.modelName = modelName;
             this.apiKey = apiKey;
 
+            var url = Environment.GetEnvironmentVariable("SUPBASE_URL");
+            var key = Environment.GetEnvironmentVariable("SUPBASE_KEY");
+
+            var supabase = new Supabase.Client(url, key, new SupabaseOptions
+            {
+                AutoRefreshToken = true,
+                AutoConnectRealtime = true
+            });
+
+
             var builder = Kernel.CreateBuilder();
             builder.AddOpenAIChatCompletion(modelName, apiKey);
 
 
             builder.Plugins.AddFromType<Estimate>();
-            builder.Plugins.AddFromType<ImageSurfaceColor>();
+            builder.Plugins.AddFromObject(new ImageSurfaceColor(supabase));
+           
 
             //var pathToImageToImagePlugin = Path.Combine(Directory.GetCurrentDirectory(), "Plugins", "Semantic","ImageToImagePlugin");
             //builder.Plugins.AddFromPromptDirectory(pathToImageToImagePlugin,"ImageToImagePlugin");

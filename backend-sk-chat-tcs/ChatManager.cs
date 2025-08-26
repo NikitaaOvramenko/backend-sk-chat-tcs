@@ -1,20 +1,18 @@
 ﻿namespace backend_sk_chat_tcs
 {
 
-    using Microsoft.SemanticKernel;
     using Microsoft.SemanticKernel.ChatCompletion;
-    using Microsoft.SemanticKernel.Connectors.OpenAI;
-    using static System.Runtime.InteropServices.JavaScript.JSType;
+    using System.Collections.Concurrent;
 
    
     public class ChatManager
     {
-        private Dictionary<string,ChatHistoryWrapper> chats1;
+        private ConcurrentDictionary<string,ChatHistoryWrapper> chats1;
 
 
         public ChatManager() {
 
-            chats1 = new Dictionary<string,ChatHistoryWrapper>();
+            chats1 = new ConcurrentDictionary<string,ChatHistoryWrapper>();
         }
 
         public List<ChatHistoryWrapper> GetChats()
@@ -33,21 +31,22 @@
         {
 
             //chats.Add(chat);
-            chats1.Add(chat.GetID(),chat);
+            chats1.TryAdd(chat.GetID(),chat);
             System.Diagnostics.Debug.WriteLine($"Chat Added !");
             GetChats().ForEach(chat => System.Diagnostics.Debug.WriteLine(chat.GetID()));
         }
 
 
-        public void RemoveChat(ChatHistoryWrapper chat)
+        public bool RemoveChat(ChatHistoryWrapper chat)
         {
-
-            
-                chats1.Remove(chat.GetID());
-                System.Diagnostics.Debug.WriteLine($"Chat Removed !");
-                GetChats().ForEach(chat => System.Diagnostics.Debug.WriteLine(chat.GetID()));
-            
+            return chats1.TryRemove(chat.GetID(), out _);
         }
+
+        public bool RemoveChat(string id)
+        {
+            return chats1.TryRemove(id, out _);
+        }
+
 
         public ChatHistoryWrapper GetChat(string id)
         {
@@ -82,6 +81,7 @@
         {
             chat.AddAssistantMessage(message);
         }
+
 
         
 

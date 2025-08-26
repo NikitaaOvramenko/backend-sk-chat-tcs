@@ -1,51 +1,35 @@
+﻿import sys
+import requests
+from io import BytesIO
+import PIL.Image
 from google import genai
 from google.genai import types
-from PIL import Image
-from io import BytesIO
-import sys
-import requests
-import warnings
-warnings.simplefilter('ignore')
+import base64
 
-
-imagePath = sys.argv[1]
+# Args from C#
+imageUrl = sys.argv[1]   # Supabase public URL of input image
 prompt = sys.argv[2]
-callBack = sys.argv[3]
-import PIL.Image
-# C:\\Users\\ovram\\Downloads\\WhatsApp Image 2025-07-12 at 15.43.32_0281aba3.jpg
-# C:\Users\ovram\Downloads\WhatsApp_Image_2025-07-12_at_15.43.32_0281aba3.jpg
-# "C:\Users\ovram\Downloads\garage.jpg"
-image = PIL.Image.open(imagePath)
 
+# Download original image
+response = requests.get(imageUrl)
+img = PIL.Image.open(BytesIO(response.content))
+
+# Gemini client
 client = genai.Client(api_key="AIzaSyC0syEHyOybeM-TC6Nrg2AP-cFqtZ7NXDU")
 
-text_input = (prompt)
-
+# Generate new image
 response = client.models.generate_content(
     model="gemini-2.0-flash-preview-image-generation",
-    contents=[text_input, image],
-    config=types.GenerateContentConfig(
-      response_modalities=['TEXT', 'IMAGE']
-    )
+    contents=[prompt, img],
+    config=types.GenerateContentConfig(response_modalities=['TEXT', 'IMAGE'])
 )
 
+# Output the new image as Base64
 for part in response.candidates[0].content.parts:
-  if part.text is not None:
-    print(part.text)
-  elif part.inline_data is not None:
-    image = Image.open(BytesIO((part.inline_data.data)))
-    image.save(imagePath)
-    #C:\\Users\\ovram\\Downloads\\output2.jpg
-
-
-    result = {
-    "status": "success",
-    "instruction": prompt,
-    "input_image": imagePath
-}
-
-    files = {"file": open(imagePath, "rb")}
-    data = {"status": "success", "instruction": prompt}
-
-resp = requests.post(callBack, files=files, data=data)
-print(resp.status_code, resp.text)
+    if part.inline_data is not None:
+        new_img = PIL.Image.open(BytesIO(part.inline_data.data))
+        buffer = BytesIO()
+        new_img.save(buffer, format="PNG")
+        img_bytes = buffer.getvalue()
+        base64_str = base64.b64encode(img_bytes).decode("utf-8")
+        print(base64_str)   # ✅ send Base64 to C#

@@ -16,11 +16,13 @@ namespace backend_sk_chat_tcs.Controllers
     {
         private readonly ChatManager chatManager;
         private SemanticKernel semanticKernel;
+        private Supabase.Client supabase;
 
-        public SessionController(ChatManager chatManager, SemanticKernel semanticKernel)
+        public SessionController(ChatManager chatManager, SemanticKernel semanticKernel, Supabase.Client supabase)
         {
             this.chatManager = chatManager;
             this.semanticKernel = semanticKernel;
+            this.supabase = supabase;
         }
 
         [HttpPost("GetSession")]
@@ -65,26 +67,34 @@ namespace backend_sk_chat_tcs.Controllers
             // ✅ Handle image only if present
             if (file != null && file.Length > 0)
             {
-                var tempFolder = Path.Combine(Directory.GetCurrentDirectory(), "Temp");
-                if (!Directory.Exists(tempFolder))
-                {
-                    Directory.CreateDirectory(tempFolder);
-                }
+               
+                using var stream1 = file.OpenReadStream();
+                using var ms = new MemoryStream();
+                await stream1.CopyToAsync(ms);
 
-                filePath = Path.Combine(tempFolder, file.FileName);
+                var bytes = ms.ToArray();
+                var uniqueName = $"Temp/{Guid.NewGuid()}_{file.FileName}";
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                await supabase.Storage
+                    .From("media")
+                    .Upload(bytes, uniqueName, new Supabase.Storage.FileOptions
+                    {
+                        CacheControl = "3600",
+                        Upsert = false
+                    });
+
+                var publicUrl = supabase.Storage.From("media").GetPublicUrl(uniqueName);
+
 
                 // Add info for AI only if image exists
                 var chat = chatManager.GetChat(req.Id);
                 chat.AddSystemMessage(
-                    $"The uploaded image is stored as '{req.Image.FileName}'. " +
-                    $"If the user asks to recolor or modify the image, call the function " +
-                    $"ImageSurfaceColor.EditImageAsync with instruction = '{req.MessageT}' and imageName = '{req.Image.FileName}'."
-                );
+    $"The uploaded image is stored as '{publicUrl}'. " +
+    $"If the user asks to recolor or modify the image, call the function " +
+    $"ImageSurfaceColor.EditImageAsync with instruction = '{req.MessageT}' " +
+    $"and imageName = '{uniqueName}'."
+);
+
             }
 
             // Add user message regardless of image
