@@ -1,4 +1,5 @@
-﻿using dotenv.net;
+﻿using backend_sk_chat_tcs.Models;
+using dotenv.net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel;
@@ -92,7 +93,8 @@ namespace backend_sk_chat_tcs.Controllers
     $"The uploaded image is stored as '{publicUrl}'. " +
     $"If the user asks to recolor or modify the image, call the function " +
     $"ImageSurfaceColor.EditImageAsync with instruction = '{req.MessageT}' " +
-    $"and imageName = '{uniqueName}'."
+    $"and imageName = '{uniqueName}'." +
+    $"and Message should be `Image Updated!` "
 );
 
             }
@@ -103,10 +105,13 @@ namespace backend_sk_chat_tcs.Controllers
 
             var settings = new OpenAIPromptExecutionSettings
             {
+
+                ResponseFormat = typeof(ResponseFormat),
                 ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+
             };
 
-            var response = "";
+            var chatResponse = "";
 
             System.Diagnostics.Debug.Write($"Chat with ID: {req.Id}");
 
@@ -116,15 +121,22 @@ namespace backend_sk_chat_tcs.Controllers
                 kernel: semanticKernel.GetKernel()
             );
 
+
+
             await foreach (var content in completion)
             {
+
+      
                 System.Diagnostics.Debug.Write(content.Content);
-                response += content.Content;
+                chatResponse += content.Content;
             }
 
-            chatManager.AddAIMessageToChat(chatForMessage, response);
+            chatManager.AddAIMessageToChat(chatForMessage, chatResponse);
+                
 
-            return response;
+
+
+            return chatResponse;
         }
     }
 }

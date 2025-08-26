@@ -1,6 +1,8 @@
-﻿using Supabase;
+﻿using backend_sk_chat_tcs.Models;
 using dotenv.net;
 using Microsoft.SemanticKernel;
+using Supabase;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;
@@ -9,7 +11,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
 {
     public class ImageSurfaceColor
     {
-        private Supabase.Client supabase;
+        private readonly Supabase.Client supabase;
 
         public ImageSurfaceColor(Supabase.Client supabase)
         {
@@ -19,11 +21,9 @@ namespace backend_sk_chat_tcs.Plugins.Native
         [KernelFunction, Description(
             "Edits an image based on a single user instruction. " +
             "If the user asks for multiple edits in one request, combine them into one operation. " +
-            "Do NOT invoke this function more than once per request." +
-            "Return ju"
-            
+            "Do NOT invoke this function more than once per request."
         )]
-        public async Task<string> EditImageAsync(
+        public async Task<ResponseFormat> EditImageAsync(
             [Description("Instruction for which object to color to what color")] string instruction,
             [Description("It's Public Url for a recent image uploaded")] string publicUrl)
         {
@@ -43,7 +43,10 @@ namespace backend_sk_chat_tcs.Plugins.Native
                 };
 
                 using var process = Process.Start(psi);
-                if (process == null) return JsonSerializer.Serialize(new { status = "error", message = "Failed to start Python process" });
+                if (process == null)
+                {
+                    return new ResponseFormat { Message = "❌ Failed to start Python process.", Url = null };
+                }
 
                 string output = await process.StandardOutput.ReadToEndAsync();
                 string error = await process.StandardError.ReadToEndAsync();
@@ -51,7 +54,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
 
                 if (!string.IsNullOrEmpty(error))
                 {
-                    return JsonSerializer.Serialize(new { status = "error", message = error });
+                    return new ResponseFormat { Message = $"⚠️ Python error: {error}", Url = null };
                 }
 
                 // Decode Base64 string from Python
@@ -71,13 +74,20 @@ namespace backend_sk_chat_tcs.Plugins.Native
 
                 // Get public URL
                 var publicUrl1 = supabase.Storage.From("media").GetPublicUrl(uniqueName);
-                
-                return publicUrl1;
 
+                return new ResponseFormat
+                {
+                    Message = $"✅ Image updated with instruction: {instruction}",
+                    Url = publicUrl1
+                };
             }
             catch (Exception ex)
             {
-                return JsonSerializer.Serialize(new { status = "error", message = ex.Message });
+                return new ResponseFormat
+                {
+                    Message = $"❌ Exception while processing image: {ex.Message}",
+                    Url = null
+                };
             }
         }
     }

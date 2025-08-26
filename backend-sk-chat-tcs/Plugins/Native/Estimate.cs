@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel;
+﻿using backend_sk_chat_tcs.Models;
+using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
 namespace backend_sk_chat_tcs.Plugins.Native
@@ -7,7 +8,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
     {
         [KernelFunction, Description("Calculates Price for Wall in metric units")]
         [return: Description("return price of the one wall")]
-        public static double CalcWallPrice(
+        public async Task<ResponseFormat> CalcWallPrice(
         [Description("Width of the wall in meters")] double width,
         [Description("Height of the wall in meters")] double height,
         [Description("Number of coats")] double numberOfCoats)
@@ -17,7 +18,10 @@ namespace backend_sk_chat_tcs.Plugins.Native
             var area = height * width;      // wall area in m²
 
             var liters = area * numberOfCoats / coverage;
-            return liters * literPrice;
+
+
+            return new ResponseFormat { Message = $"{liters * literPrice}", Url = null };
+                
         }
     }
 }
