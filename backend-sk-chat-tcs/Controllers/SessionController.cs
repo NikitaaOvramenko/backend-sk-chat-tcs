@@ -27,15 +27,16 @@ namespace backend_sk_chat_tcs.Controllers
         }
 
         [HttpPost("GetSession")]
-        public string GetSessionIdAPI([FromBody] Session req)
+        public async Task<string> GetSessionIdAPI([FromBody] Session req)
         {
-            var chat = chatManager.CreateChat(req.Id);
+            var chat =  chatManager.CreateChat(req.Id);
 
             chat.AddSystemMessage($"You are agent for TCS-PAINTS company, you will respond for this {req.Id}," +
                 $"You only answer for questions related to Paints and how user want to paint them especially (eg. color this wall in green and door in black) etc and this company and also users relevant message like (user introduction, user QA, human stuff). " +
                 $"If user asks something not related or off you respond like this: " +
                 $"I appreciate your question but please ask question related to today's theme and topic which is paints. " +
-                $"Also for example if user want you to modify(color) some surface from the image, YOU CAN DO THAT.");
+                $"Also for example if user want you to modify(color) some surface from the image, YOU CAN DO THAT." +
+                $"Also Act Human and answer human like questions(eg. `hi``Hi my name is ...` `how are you ` and etc...)");
 
             chatManager.AddChat(chat);
 
@@ -94,7 +95,8 @@ namespace backend_sk_chat_tcs.Controllers
     $"If the user asks to recolor or modify the image, call the function " +
     $"ImageSurfaceColor.EditImageAsync with instruction = '{req.MessageT}' " +
     $"and imageName = '{uniqueName}'." +
-    $"and Message should be `Image Updated!` "
+    $"and Message should be `Image Updated!`" +
+    $"IF USER UPLOADED JUST AN IMAGE WITHOUT PROMPT DESCRIBING WHAT TO DO WITH IT DONT CALL ImageSurfaceColor.EditImageAsync, OUTPUT_RESPONSE: Specify what color you want it to be painted ? " 
 );
 
             }

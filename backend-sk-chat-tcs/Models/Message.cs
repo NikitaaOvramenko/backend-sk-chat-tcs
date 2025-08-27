@@ -1,4 +1,4 @@
-﻿namespace backend_sk_chat_tcs
+﻿namespace backend_sk_chat_tcs.Models
 {
     public record class Message
     {
