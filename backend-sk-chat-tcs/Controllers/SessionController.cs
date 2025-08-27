@@ -110,7 +110,7 @@ namespace backend_sk_chat_tcs.Controllers
 
                 ResponseFormat = typeof(ResponseFormat),
                 ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
-
+                //
             };
 
             var chatResponse = "";
