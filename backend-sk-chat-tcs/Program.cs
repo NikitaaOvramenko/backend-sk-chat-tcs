@@ -26,14 +26,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(new SemanticKernel(
-    Environment.GetEnvironmentVariable("MODEL_NAME"),
-    Environment.GetEnvironmentVariable("OPENAI_APIKEY")
+    Environment.GetEnvironmentVariable("MODEL_NAME") ?? throw new InvalidOperationException("MODEL_NAME not set"),
+    Environment.GetEnvironmentVariable("OPENAI_APIKEY") ?? throw new InvalidOperationException("OPENAI_APIKEY not set")
 ));
 
 
 
 builder.Services.AddSingleton<ChatManager>();
-builder.Services.AddSingleton(provider => new Supabase.Client(Environment.GetEnvironmentVariable("SUPBASE_URL"), Environment.GetEnvironmentVariable("SUPBASE_KEY"), new SupabaseOptions
+builder.Services.AddSingleton(provider => new Supabase.Client(Environment.GetEnvironmentVariable("SUPBASE_URL") ?? throw new InvalidOperationException("SUPABASE_URL not set"), Environment.GetEnvironmentVariable("SUPBASE_KEY") ?? throw new InvalidOperationException("SUPABASE_KEY not set"), new SupabaseOptions
 {
     AutoRefreshToken = true,
     AutoConnectRealtime = true
