@@ -27,6 +27,10 @@
                 AutoConnectRealtime = true
             });
 
+            // 🔑 Ensure client is initialized before use
+            supabase.InitializeAsync().Wait();
+
+
 
             var builder = Kernel.CreateBuilder();
             builder.AddOpenAIChatCompletion(modelName, apiKey);
