@@ -3,8 +3,8 @@ using dotenv.net;
 using  Microsoft.SemanticKernel.Connectors.OpenAI;
 using Supabase;
 DotEnv.Load();
-Console.WriteLine("SUPABASE_URL=" + Environment.GetEnvironmentVariable("SUPABASE_URL"));
-Console.WriteLine("SUPABASE_KEY=" + Environment.GetEnvironmentVariable("SUPABASE_KEY"));
+Console.WriteLine("SUPABASE_URL=" + Environment.GetEnvironmentVariable("SUPBASE_URL"));
+Console.WriteLine("SUPABASE_KEY=" + Environment.GetEnvironmentVariable("SUPBASE_KEY"));
 Console.WriteLine("OPENAI_APIKEY=" + Environment.GetEnvironmentVariable("OPENAI_APIKEY"));
 var builder = WebApplication.CreateBuilder(args);
 
