@@ -1,14 +1,16 @@
-using backend_sk_chat_tcs;
+﻿using backend_sk_chat_tcs;
 using dotenv.net;
-using  Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Supabase;
+
 DotEnv.Load();
+
+Console.WriteLine("🔎 Environment check:");
 Console.WriteLine("SUPABASE_URL=" + Environment.GetEnvironmentVariable("SUPBASE_URL"));
 Console.WriteLine("SUPABASE_KEY=" + Environment.GetEnvironmentVariable("SUPBASE_KEY"));
 Console.WriteLine("OPENAI_APIKEY=" + Environment.GetEnvironmentVariable("OPENAI_APIKEY"));
+
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 builder.Services.AddCors(options =>
 {
@@ -20,33 +22,63 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton(new SemanticKernel(
-    Environment.GetEnvironmentVariable("MODEL_NAME") ?? throw new InvalidOperationException("MODEL_NAME not set"),
-    Environment.GetEnvironmentVariable("OPENAI_APIKEY") ?? throw new InvalidOperationException("OPENAI_APIKEY not set")
-));
 
+// SemanticKernel init with guards
+try
+{
+    Console.WriteLine("Step 1: Initializing SemanticKernel...");
 
+    var modelName = Environment.GetEnvironmentVariable("MODEL_NAME")
+        ?? throw new InvalidOperationException("MODEL_NAME not set");
+    var openAiKey = Environment.GetEnvironmentVariable("OPENAI_APIKEY")
+        ?? throw new InvalidOperationException("OPENAI_APIKEY not set");
+
+    builder.Services.AddSingleton(new SemanticKernel(modelName, openAiKey));
+
+    Console.WriteLine("✅ SemanticKernel registered.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("❌ SemanticKernel init failed: " + ex.GetType().FullName + " — " + ex.Message);
+    throw;
+}
 
 builder.Services.AddSingleton<ChatManager>();
-builder.Services.AddSingleton(provider => new Supabase.Client(Environment.GetEnvironmentVariable("SUPBASE_URL") ?? throw new InvalidOperationException("SUPABASE_URL not set"), Environment.GetEnvironmentVariable("SUPBASE_KEY") ?? throw new InvalidOperationException("SUPABASE_KEY not set"), new SupabaseOptions
+
+// Supabase init with guards
+builder.Services.AddSingleton(provider =>
 {
-    AutoRefreshToken = true,
-    AutoConnectRealtime = true
-}));
+    try
+    {
+        Console.WriteLine("Step 2: Initializing Supabase client...");
 
+        var url = Environment.GetEnvironmentVariable("SUPABASE_URL")
+            ?? throw new InvalidOperationException("SUPBASE_URL not set");
+        var key = Environment.GetEnvironmentVariable("SUPBASE_KEY")
+            ?? throw new InvalidOperationException("SUPABASE_KEY not set");
 
+        var supabase = new Supabase.Client(url, key, new SupabaseOptions
+        {
+            AutoRefreshToken = true,
+            AutoConnectRealtime = true
+        });
 
+        // Ensure client is initialized
+        supabase.InitializeAsync().Wait();
 
-
-
+        Console.WriteLine("✅ Supabase client initialized.");
+        return supabase;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("❌ Supabase init failed: " + ex.GetType().FullName + " — " + ex.Message);
+        throw;
+    }
+});
 
 var app = builder.Build();
 
@@ -60,9 +92,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
+Console.WriteLine("🚀 Application starting...");
 app.Run();
