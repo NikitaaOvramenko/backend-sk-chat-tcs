@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: backend-sk-chat-tcs
+    env: docker
+    plan: free # or starter/standard if you need more resources
+    dockerfilePath: ./Dockerfile # Render will use your Dockerfile
+    autoDeploy: true # redeploy on git push
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: OPENAI_APIKEY
+        sync: false
+      - key: MODEL_NAME
+        value: gpt-4o-mini # adjust if you want another model
