@@ -7,6 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // React dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -34,6 +46,8 @@ builder.Services.AddSingleton(provider => new Supabase.Client(Environment.GetEnv
 
 
 var app = builder.Build();
+
+app.UseCors("AllowReactDev");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

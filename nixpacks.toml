@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["dotnet-sdk_8"]
+
+[start]
+cmd = "dotnet run --project backend-sk-chat-tcs/backend-sk-chat-tcs.csproj"
