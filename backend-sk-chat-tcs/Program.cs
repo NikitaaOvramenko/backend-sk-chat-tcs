@@ -5,6 +5,8 @@ using Supabase;
 
 DotEnv.Load();
 
+AppContext.SetSwitch("System.Diagnostics.Tracing.EventSource.IsSupported", false);
+
 Console.WriteLine("🔎 Environment check:");
 Console.WriteLine("SUPABASE_URL=" + Environment.GetEnvironmentVariable("SUPBASE_URL"));
 Console.WriteLine("SUPABASE_KEY=" + Environment.GetEnvironmentVariable("SUPBASE_KEY"));
