@@ -44,11 +44,14 @@ namespace backend_sk_chat_tcs.Controllers
         }
 
         [HttpPost("EndChat")]
-        public string EndSessionAPI([FromBody] Session req)
+        public IActionResult EndSessionAPI([FromBody] Session req)
         {
             var chat = chatManager.GetChat(req.Id);
             chatManager.RemoveChat(chat);
-            return $"{req.Id} ID Session is Closed !";
+            System.Diagnostics.Debug.Write($"Chat with ID {req.Id} is removed!\n");
+
+            return NoContent();
+
         }
 
         [HttpPost("WriteToChat")]

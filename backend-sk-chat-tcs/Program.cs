@@ -20,7 +20,10 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173") // React dev server
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
+
+              
     });
 });
 
@@ -58,7 +61,7 @@ builder.Services.AddSingleton(provider =>
     {
         Console.WriteLine("Step 2: Initializing Supabase client...");
 
-        var url = Environment.GetEnvironmentVariable("SUPABASE_URL")
+        var url = Environment.GetEnvironmentVariable("SUPBASE_URL")
             ?? throw new InvalidOperationException("SUPBASE_URL not set");
         var key = Environment.GetEnvironmentVariable("SUPBASE_KEY")
             ?? throw new InvalidOperationException("SUPABASE_KEY not set");
