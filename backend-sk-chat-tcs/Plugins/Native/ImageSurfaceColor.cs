@@ -33,7 +33,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
 
                 var psi = new ProcessStartInfo
                 {
-                    FileName = "python",
+                    FileName = "python3",
                     Arguments = $"\"{scriptPath}\" \"{publicUrl}\" \"{instruction}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
