@@ -2,7 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 RUN apt-get update && apt-get install -y python3 python3-pip \
-    && pip3 install --no-cache-dir requests pillow google-genai
+    && pip3 install --no-cache-dir requests pillow google-generativeai
+
 
 WORKDIR /src
 
