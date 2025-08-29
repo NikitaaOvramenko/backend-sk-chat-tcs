@@ -33,6 +33,7 @@
             //chats.Add(chat);
             chats1.TryAdd(chat.GetID(),chat);
             System.Diagnostics.Debug.WriteLine($"Chat Added !");
+            Console.WriteLine($"Chat Added! with id {chat.GetID}");
             GetChats().ForEach(chat => System.Diagnostics.Debug.WriteLine(chat.GetID()));
         }
 
@@ -50,13 +51,6 @@
 
         public ChatHistoryWrapper GetChat(string id)
         {
-            //foreach (var chat in chats)
-            //{
-            //    if(chat.GetID() == id)
-            //    {
-            //        return chat;
-            //    }
-            //}
 
             if (chats1.TryGetValue(id, out var chat1))
             {

@@ -49,6 +49,7 @@ namespace backend_sk_chat_tcs.Controllers
             var chat = chatManager.GetChat(req.Id);
             chatManager.RemoveChat(chat);
             System.Diagnostics.Debug.Write($"Chat with ID {req.Id} is removed!\n");
+            Console.WriteLine($"Chat with ID {req.Id} is removed!\n");
 
             return NoContent();
 
@@ -119,6 +120,8 @@ namespace backend_sk_chat_tcs.Controllers
             var chatResponse = "";
 
             System.Diagnostics.Debug.Write($"Chat with ID: {req.Id}");
+            Console.WriteLine($"Chat with ID: {req.Id}");
+
 
             var completion = semanticKernel.ChatCompletionService.GetStreamingChatMessageContentsAsync(
                 chatHistory: chatForMessage,
@@ -133,6 +136,7 @@ namespace backend_sk_chat_tcs.Controllers
 
       
                 System.Diagnostics.Debug.Write(content.Content);
+                Console.Write(content.Content);
                 chatResponse += content.Content;
             }
 
