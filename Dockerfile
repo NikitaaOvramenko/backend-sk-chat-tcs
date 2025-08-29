@@ -1,8 +1,10 @@
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
+# Install Python + pip + required libs
 RUN apt-get update && apt-get install -y python3 python3-pip \
-    && pip3 install --no-cache-dir requests pillow google-generativeai
+    && pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir requests pillow google-genai
 
 
 WORKDIR /src
