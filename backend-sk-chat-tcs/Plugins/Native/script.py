@@ -5,6 +5,7 @@ import PIL.Image
 from google import genai
 from google.genai import types
 import base64
+import os
 
 # Args from C#
 imageUrl = sys.argv[1]   # Supabase public URL of input image
@@ -15,7 +16,7 @@ response = requests.get(imageUrl)
 img = PIL.Image.open(BytesIO(response.content))
 
 # Gemini client
-client = genai.Client(api_key="AIzaSyC0syEHyOybeM-TC6Nrg2AP-cFqtZ7NXDU")
+client = genai.Client(api_key=os.environ["GEMINI_APIKEY"])
 
 # Generate new image
 response = client.models.generate_content(

@@ -27,13 +27,16 @@ namespace backend_sk_chat_tcs.Plugins.Native
             [Description("Instruction for which object to color to what color")] string instruction,
             [Description("It's Public Url for a recent image uploaded")] string publicUrl)
         {
+            DotEnv.Load();
+            var fileName = Environment.GetEnvironmentVariable("PYTHON_CHOICE");
             try
             {
+                
                 var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Plugins", "Native", "script.py");
 
                 var psi = new ProcessStartInfo
                 {
-                    FileName = "python3",
+                    FileName = fileName,
                     Arguments = $"\"{scriptPath}\" \"{publicUrl}\" \"{instruction}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
