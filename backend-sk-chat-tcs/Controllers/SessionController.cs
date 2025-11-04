@@ -47,6 +47,14 @@ namespace backend_sk_chat_tcs.Controllers
         public IActionResult EndSessionAPI([FromBody] Session req)
         {
             var chat = chatManager.GetChat(req.Id);
+
+            if(chat == null)
+            {
+                Console.WriteLine($"Chat not exist");
+                return NoContent();
+               
+            }
+
             chatManager.RemoveChat(chat);
             System.Diagnostics.Debug.Write($"Chat with ID {req.Id} is removed!\n");
             Console.WriteLine($"Chat with ID {req.Id} is removed!\n");
@@ -70,7 +78,7 @@ namespace backend_sk_chat_tcs.Controllers
 
             string? filePath = null;
 
-            // ✅ Handle image only if present
+            
             if (file != null && file.Length > 0)
             {
                
