@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /backend-sk-chat-tcs/.env
+openspec
+.cursor
+AGENTS.md

@@ -48,7 +48,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
                 using var process = Process.Start(psi);
                 if (process == null)
                 {
-                    return new ResponseFormat { Message = "❌ Failed to start Python process.", Url = null };
+                    return new ResponseFormat { Message = " Failed to start Python process.", Url = null };
                 }
 
                 string output = await process.StandardOutput.ReadToEndAsync();
@@ -80,7 +80,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
 
                 return new ResponseFormat
                 {
-                    Message = $"✅ Image updated with instruction: {instruction}",
+                    Message = $" Image updated with instruction: {instruction}",
                     Url = publicUrl1
                 };
             }
@@ -88,7 +88,7 @@ namespace backend_sk_chat_tcs.Plugins.Native
             {
                 return new ResponseFormat
                 {
-                    Message = $"❌ Exception while processing image: {ex.Message}",
+                    Message = $"Exception while processing image: {ex.Message}",
                     Url = null
                 };
             }
